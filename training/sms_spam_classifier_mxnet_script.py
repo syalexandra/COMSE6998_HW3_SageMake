@@ -10,6 +10,7 @@ import time
 
 try:
     import requests
+    import pandas
 except:
     import sys
     import subprocess
