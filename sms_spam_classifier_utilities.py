@@ -12,7 +12,7 @@ else:
 def vectorize_sequences(sequences, vocabulary_length):
     results = np.zeros((len(sequences), vocabulary_length))
     for i, sequence in enumerate(sequences):
-       results[i, sequence] = 1. 
+        results[i, sequence] = 1. 
     return results
 
 def one_hot_encode(messages, vocabulary_length):
