@@ -18,13 +18,13 @@ print(role)
 
 s3 = boto3.resource('s3')
 target_bucket = s3.Bucket(bucket_name)
-
+"""
 with open('dataset/sms_train_set.gz', 'rb') as data:
     target_bucket.upload_fileobj(data, '{0}/train/sms_train_set.gz'.format(bucket_key_prefix))
     
 with open('dataset/sms_val_set.gz', 'rb') as data:
     target_bucket.upload_fileobj(data, '{0}/val/sms_val_set.gz'.format(bucket_key_prefix))
-
+"""
 
 output_path = 's3://{0}/{1}/output'.format(bucket_name, bucket_key_prefix)
 code_location = 's3://{0}/{1}/code'.format(bucket_name, bucket_key_prefix)
@@ -51,5 +51,5 @@ m.fit(inputs)
 
 
 mxnet_pred = m.deploy(initial_instance_count=1,
-                      instance_type='ml.m5.large',
-                      endpoint_name='sms-spam-classifier-mxnet-2022-04-10-16-10-36-161')
+                      instance_type='ml.m5.large')#,
+                      #endpoint_name='sms-spam-classifier-mxnet-2022-04-10-16-10-36-161')
