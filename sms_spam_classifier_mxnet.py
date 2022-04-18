@@ -29,7 +29,7 @@ with open('dataset/sms_val_set.gz', 'rb') as data:
 output_path = 's3://{0}/{1}/output'.format(bucket_name, bucket_key_prefix)
 code_location = 's3://{0}/{1}/code'.format(bucket_name, bucket_key_prefix)
 
-m = MXNet('sms_spam_classifier_mxnet_script.py',
+m = MXNet('/home/ec2-user/SageMaker/COMSE6998_HW3_SageMake/sms_spam_classifier_mxnet_script.py',
           role=role,
           train_instance_count=1,
           instance_type='ml.c5.2xlarge',
