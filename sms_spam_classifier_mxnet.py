@@ -22,8 +22,14 @@ try:
 except:
     pass
 
-#flag=True
-#while flag:
+flag=True
+while flag:
+    try:
+        client.describe_endpoint(
+                EndpointName='sms-spam-classifier-mxnet'
+            )
+    except:
+        flag=False
 
 
 
