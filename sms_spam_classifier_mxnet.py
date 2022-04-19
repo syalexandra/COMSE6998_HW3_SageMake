@@ -51,5 +51,5 @@ m.fit(inputs)
 
 
 mxnet_pred = m.deploy(initial_instance_count=1,
-                      instance_type='ml.m5.large')#,
-                      #endpoint_name='sms-spam-classifier-mxnet-2022-04-10-16-10-36-161')
+                      instance_type='ml.m5.large',
+                      endpoint_name='sms-spam-classifier-mxnet-2022-04-10-16-10-36-161')
