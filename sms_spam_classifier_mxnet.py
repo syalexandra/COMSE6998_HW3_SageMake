@@ -59,3 +59,6 @@ m.fit(inputs)
 mxnet_pred = m.deploy(initial_instance_count=1,
                       instance_type='ml.m5.large',
                       endpoint_name='sms-spam-classifier-mxnet')
+
+
+client.stop_notebook_instance(NotebookInstanceName='spam-detection-instance')
