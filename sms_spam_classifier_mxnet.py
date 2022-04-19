@@ -48,7 +48,10 @@ inputs = {'train': 's3://{0}/{1}/train/'.format(bucket_name, bucket_key_prefix),
 
 m.fit(inputs)
 
-
+client = boto3.client('sagemaker')
+client.delete_endpoint(
+    EndpointName='sms-spam-classifier-mxnet-2022-04-10-16-10-36-161'
+)
 
 mxnet_pred = m.deploy(initial_instance_count=1,
                       instance_type='ml.m5.large',
