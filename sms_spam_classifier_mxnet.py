@@ -22,6 +22,11 @@ try:
 except:
     pass
 
+#flag=True
+#while flag:
+
+
+
 s3 = boto3.resource('s3')
 target_bucket = s3.Bucket(bucket_name)
 """
