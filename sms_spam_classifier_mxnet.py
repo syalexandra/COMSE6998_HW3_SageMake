@@ -73,10 +73,11 @@ while flag:
                             endpoint_name='sms-spam-classifier-mxnet')
     except:
         flag=False
-
+"""
 flag=True
 while flag:
     try:
         client.stop_notebook_instance(NotebookInstanceName='spam-detection-instance')
     except:
         flag=False
+"""
