@@ -25,7 +25,7 @@ except:
 
 try:
     client.delete_endpoint_config(
-        EndpointName='sms-spam-classifier-mxnet'
+        EndpointConfigName='sms-spam-classifier-mxnet'
     )
 except:
     pass
