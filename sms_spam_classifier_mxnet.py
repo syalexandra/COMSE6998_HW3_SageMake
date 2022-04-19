@@ -23,6 +23,13 @@ except:
     pass
 
 
+try:
+    client.delete_endpoint_config(
+        EndpointName='sms-spam-classifier-mxnet'
+    )
+except:
+    pass
+
 
 s3 = boto3.resource('s3')
 target_bucket = s3.Bucket(bucket_name)
