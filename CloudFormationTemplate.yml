@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template for photo album
+Parameters:
+  EndpointName:
+    Description: Name of the endpoint
+    Type: String
+
+  LF1Name:
+    Description: Lambda function name
+    Type: String
+  
+
+Resources:
+  LambdaFunction1:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Runtime: python3.9
+      FunctionName: !Ref LF1Name
+      Code:
+        S3Bucket: "hw3-lambda-code-bucket"
+        S3Key: "spam-detection.zip"
+      Description: "lambda function created by function"
+      MemorySize: 128
+      Environment: 
+        Variables: 
+          Region: "us-east-1"
+          Endpoint:
+            Ref: EndpointName
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LF1Role.Arn
+      Layers:
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-numpy:2
+
+
+
+  LF1Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Description: Role to provide LF1
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+      RoleName: SpamDetectionRole
+
+
+      
