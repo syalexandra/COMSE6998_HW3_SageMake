@@ -14,9 +14,13 @@ Parameters:
     Type: String
 
   RuleSetName:
-    Description: Name of the rules
+    Description: Name of the rules for ses
     Type: String
-  
+
+  LF2Name:
+    Description: Lambda 2 function name
+    Type: String
+
 
 Resources:
   LambdaFunction1:
@@ -38,6 +42,46 @@ Resources:
       Role: !GetAtt LF1Role.Arn
       Layers:
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-numpy:2
+
+
+  LambdaFunction2:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Runtime: python3.9
+      FunctionName: !Ref LF2Name
+      Code:
+        S3Bucket: "hw3-lambda-code-bucket"
+        S3Key: "tigger-notebook.zip"
+      Description: "lambda function created by function"
+      MemorySize: 128
+      Environment: 
+        Variables: 
+          Region: "us-east-1"
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LF1Role.Arn
+
+
+  ScheduledRule:
+    Type: "AWS::Events::Rule"
+    Properties: 
+      ScheduleExpression: "rate(10 days)"
+      State: "DISABLED"
+      Targets: 
+        - 
+          Arn: !GetAtt LambdaFunction2.Arn
+          Id: "TargetFunction"
+
+
+  PermissionForEventsToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref LambdaFunction2
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "ScheduledRule"
+          - "Arn"
 
   LF1InvokePermission: 
     Type: "AWS::Lambda::Permission"
@@ -118,6 +162,7 @@ Resources:
     Properties: 
       RuleSetName: !Ref RuleSetName
 
+
   SESRule:
     Type: 'AWS::SES::ReceiptRule'
     Properties:
@@ -130,3 +175,4 @@ Resources:
               BucketName: !Ref S3BucketName
         Recipients: 
           - 'sunyue.co.uk'
+
