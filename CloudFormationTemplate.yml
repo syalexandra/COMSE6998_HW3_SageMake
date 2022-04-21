@@ -8,6 +8,14 @@ Parameters:
   LF1Name:
     Description: Lambda function name
     Type: String
+
+  S3BucketName:
+    Description: Name of the S3 email save
+    Type: String
+
+  RuleSetName:
+    Description: Name of the rules
+    Type: String
   
 
 Resources:
@@ -31,7 +39,15 @@ Resources:
       Layers:
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-numpy:2
 
-
+  LF1InvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: LambdaFunction1
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt LambdaFunction1.Arn
+      Principal: "s3.amazonaws.com"
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !GetAtt S3Bucket.Arn
 
   LF1Role:
     Type: AWS::IAM::Role
@@ -49,7 +65,68 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
         - arn:aws:iam::aws:policy/CloudWatchFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonSESFullAccess
       RoleName: SpamDetectionRole
 
 
-      
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref S3BucketName
+      AccessControl: PublicRead
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:Put'
+            Function: !GetAtt LambdaFunction1.Arn
+
+
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: "2012-10-17"
+        Statement:
+        - Sid: Statement1
+          Effect: Allow
+          Principal: '*'
+          Action: 's3:*'
+          Resource: !Join
+            - ''
+            - - 'arn:aws:s3:::'
+              - !Ref S3Bucket
+              - /*
+        - Sid: AllowSESPuts
+          Effect: Allow
+          Principal:
+            Service: ses.amazonaws.com
+          Action: s3:PutObject
+          Resource : !Join
+            - ''
+            - - 'arn:aws:s3:::'
+              - !Ref S3Bucket
+              - /*
+          Condition:
+            StringEquals:
+              'aws:Referer': !Ref AWS::AccountId
+      Bucket: !Ref S3Bucket
+
+
+  SESRuleSet:
+    Type: 'AWS::SES::ReceiptRuleSet'
+    Properties: 
+      RuleSetName: !Ref RuleSetName
+
+  SESRule:
+    Type: 'AWS::SES::ReceiptRule'
+    Properties:
+      RuleSetName: !Ref RuleSetName
+      Rule:
+        Enabled: true
+        ScanEnabled: false
+        Actions:
+          - S3Action:
+              BucketName: !Ref S3BucketName
+        Recipients: 
+          - 'sunyue.co.uk'
